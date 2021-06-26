@@ -2,7 +2,6 @@ const app = require('express')(),
   request = require('request'),
   server = require('http').Server(app),
   wss = require('ws'),
-  cryptr = require('cryptr'),
   session = require('express-session')
 require('ejs')
 
@@ -43,11 +42,10 @@ app.get('/', (req, res) => {
       console.log(a)
       arr.push({
         username: a.username,
-        content: new cryptr(String(a.expire)).decrypt(a.content),
+        content: a.content,
         color: a.color,
         CreatedAt: a.CreatedAt,
         avatar: a.avatar || null,
-        expire: a.expire
       })
     })
     res.render('main', {
@@ -67,31 +65,6 @@ app.get('/', (req, res) => {
 
 app.get('/test', (req, res)=> {
   res.render('test')
-})
-
-app.post('/crypte', (req, res) => {
-  if (!req.body || !req.body.chaine && !req.body.key) return res.status(403).json({
-    code: 403,
-    missing: !req.body ? "body" : !req.body.chaine ? "chaine" : req.body.key ? "key" : "?"
-  })
-  res.status(200).json({
-    code: 203,
-    content: new cryptr(String(req.body.key)).encrypt(req.body.chaine),
-    chaine: req.body.chaine,
-    key: req.body.key
-  })
-})
-app.post('/decrypte', (req, res) => {
-  if (!req.body || !req.body.chaine && !req.body.key) return res.status(403).json({
-    code: 403,
-    missing: !req.body ? "body" : !req.body.chaine ? "chaine" : req.body.key ? "key" : "?"
-  })
-  res.status(203).json({
-    code: 203,
-    content: new cryptr(String(req.body.key)).decrypt(req.body.chaine),
-    chaine: req.body.chaine,
-    key: req.body.key
-  })
 })
 
 
